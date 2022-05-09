@@ -1,7 +1,7 @@
 package model
 
 import (
-    "gorm.io/gorm"
+	"gorm.io/gorm"
 )
 
 type Product struct {
@@ -12,7 +12,7 @@ type Product struct {
 
 type User struct {
 	gorm.Model
-	Mail     string
+	Mail     string `gorm:"unique"`
 	Password []byte
 	Age      uint8
 }
