@@ -1,0 +1,24 @@
+PUT  http://localhost:3000/user/reg/
+content-type: application/json
+
+{
+    "mail": "example1@gmail.com", "pass": "password", "age": 99
+}
+
+###
+
+PUT  http://localhost:3000/user/reg/
+content-type: application/json
+
+{
+    "mail": "example1@gmail.com", "pass": "password", "age": 10
+}
+
+###
+
+POST  http://localhost:3000/user/login/
+content-type: application/json
+
+{
+    "mail": "example1@gmail.com", "pass": "password"
+}

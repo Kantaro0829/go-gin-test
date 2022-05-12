@@ -10,8 +10,14 @@ func main() {
 
 	infra.DBInit()
 	router := gin.Default()
-	router.GET("/get", handler.Getting)
-	router.POST("/post", handler.Posting)
+	user := router.Group("/user")
+	{
+		user.GET("/get", handler.Getting)
+		user.PUT("/reg", handler.UserReg)
+		user.POST("/login", handler.UserLogin)
+	}
+	// router.GET("/get", handler.Getting)
+	// router.POST("/userreg", handler.UserReg)
 	router.Run(":3000")
 
 }

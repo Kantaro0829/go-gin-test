@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 
 	"github.com/Kantaro0829/go-gin-test/infra"
 	"github.com/Kantaro0829/go-gin-test/json"
@@ -18,9 +17,11 @@ func Getting(c *gin.Context) {
 	if err != nil {
 		panic("failed to hash password")
 	}
-
+	var age uint8
+	age = 12
+	mail := "test1@gmail.com"
 	db := infra.DBInit()
-	user := model.User{Mail: "test1@gmail.com", Password: hash, Age: 12}
+	user := model.User{Mail: mail, Password: hash, Age: age}
 	result := db.Create(&user)
 
 	if result.Error != nil {
@@ -29,7 +30,7 @@ func Getting(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "hello world"})
 }
 
-func Posting(c *gin.Context) {
+func UserReg(c *gin.Context) {
 	var userJson json.JsonRequestUser
 
 	if err := c.ShouldBindJSON(&userJson); err != nil {
@@ -48,21 +49,54 @@ func Posting(c *gin.Context) {
 
 	db := infra.DBInit()
 	user := model.User{Mail: mail, Password: hashedPassword, Age: age}
-	if result := db.Create(&user); result.Error != nil {
-		fmt.Println(result.Error)
-		fmt.Println(result.RowsAffected)
-		fmt.Println(reflect.TypeOf(result))
-		fmt.Println(reflect.TypeOf(result.Error))
 
-		panic("failed to insert the data to the users table")
+	if result := db.Create(&user); result.Error != nil {
+		c.JSON(http.StatusConflict, gin.H{"status": 400})
+		return
+	}
+	fmt.Println("登録されたパスワード")
+	fmt.Println(user.Password)
+
+	c.JSON(http.StatusOK, gin.H{"message": "data was inserted"})
+}
+
+func UserLogin(c *gin.Context) {
+	var userLoginJson json.JsonRequestUser
+
+	if err := c.ShouldBindJSON(&userLoginJson); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	// if result.Error != nil {
+	mail := userLoginJson.UserMail
+	password := userLoginJson.UserPassword
+	fmt.Println(mail)
+	fmt.Println(password)
+	// hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12) //ハッシュ
 
-	// 	fmt.Println(result.Error)
-	// 	fmt.Println(result.RowsAffected)
-	// 	panic("failed to insert the data to the users table")
-
+	// if err != nil {
+	// 	panic("failed to hash password")
 	// }
-	c.JSON(http.StatusOK, gin.H{"message": "data was inserted"})
+
+	db := infra.DBInit()
+	user := model.User{}
+
+	// Get first matched record
+	result := db.Select("password").Where("mail = ?", mail).First(&user)
+
+	if result.Error != nil {
+		c.JSON(http.StatusConflict, gin.H{"status": 400})
+		return
+	}
+
+	if isAuthorized := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); isAuthorized != nil {
+
+		fmt.Println("不一致")
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "failed to login"})
+		return
+
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "succeed login"})
+
 }

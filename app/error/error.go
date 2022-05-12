@@ -1,11 +1,7 @@
-// package error
+package error
 
-// import (
-// 	"fmt"
-//     "errors"
-// 	"gorm.io/gorm"
-// )
-
-// func DBError(errorMessage string) string {
-
-// }
+type UserRegErr struct {
+	Message string `json:"message"`
+	Status  int    `json:"status"`
+	Error   string `json:"error"`
+}
