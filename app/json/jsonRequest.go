@@ -10,3 +10,10 @@ type JsonRequestUserLogin struct {
 	UserMail     string `json:"mail"`
 	UserPassword string `json:"pass"`
 }
+
+type UpdateUserJson struct {
+	Mail        string `json:"mail"`
+	Password    string `json:"pass"`
+	NewMail     string `json:"new-mail"`
+	NewPassword string `json:"new-pass"`
+}
