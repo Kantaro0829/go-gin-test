@@ -100,3 +100,62 @@ func UserLogin(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "succeed login"})
 
 }
+
+func UpdateUser(c *gin.Context) {
+	var updateUserJson json.UpdateUserJson
+
+	if err := c.ShouldBindJSON(&updateUserJson); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	mail := updateUserJson.Mail
+	password := updateUserJson.Password
+	newMail := updateUserJson.NewMail
+	newPassword := updateUserJson.NewPassword
+
+	db := infra.DBInit()
+	user := model.User{}
+
+	// Get first matched record
+	result := db.Select("password").Where("mail = ?", mail).First(&user)
+
+	if result.Error != nil {
+		c.JSON(http.StatusConflict, gin.H{"status": 400})
+		return
+	}
+
+	if isAuthorized := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); isAuthorized != nil {
+
+		fmt.Println("不一致")
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "パスワードかメールアドレスが正しくありません"})
+		return
+	}
+
+	//新しいパスワードのハッシュ化
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), 12)
+	if err != nil {
+		panic("failed to hash password")
+	}
+
+	//dbに値を更新する
+	db.First(&user)
+	user.Mail = newMail
+	user.Password = hashedPassword
+
+	if result = db.Save(&user); result.Error != nil {
+		fmt.Println("DBの更新ができていません")
+		c.JSON(http.StatusServiceUnavailable, gin.H{"status": 503})
+		return
+	}
+
+	fmt.Println(result.RowsAffected)
+	amountOfUpdate := result.RowsAffected
+
+	if amountOfUpdate != 1 {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"status": 503})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": 200})
+}

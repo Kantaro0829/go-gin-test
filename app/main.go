@@ -15,6 +15,7 @@ func main() {
 		user.GET("/get", handler.Getting)
 		user.PUT("/reg", handler.UserReg)
 		user.POST("/login", handler.UserLogin)
+		user.PUT("/update", handler.UpdateUser)
 	}
 	// router.GET("/get", handler.Getting)
 	// router.POST("/userreg", handler.UserReg)

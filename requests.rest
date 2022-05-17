@@ -20,5 +20,15 @@ POST  http://localhost:3000/user/login/
 content-type: application/json
 
 {
-    "mail": "example1@gmail.com", "pass": "password"
+    "mail": "changed@gmail.com", "pass": "newpassword"
+}
+
+###
+
+
+PUT  http://localhost:3000/user/update/
+content-type: application/json
+
+{
+    "mail": "example1@gmail.com", "pass": "password", "new-mail": "changed@gmail.com", "new-pass": "newpassword"
 }
