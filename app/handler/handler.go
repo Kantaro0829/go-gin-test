@@ -12,21 +12,24 @@ import (
 )
 
 func Getting(c *gin.Context) {
-	//ハッシュ
-	hash, err := bcrypt.GenerateFromPassword([]byte("plain text"), 12)
-	if err != nil {
-		panic("failed to hash password")
-	}
-	var age uint8
-	age = 12
-	mail := "test1@gmail.com"
 	db := infra.DBInit()
-	user := model.User{Mail: mail, Password: hash, Age: age}
-	result := db.Create(&user)
+	//user := model.User{}
+	users := []model.User{}
 
-	if result.Error != nil {
-		panic("failed to insert the data to the users table")
+	if result := db.Find(&users); result.Error != nil {
+		fmt.Println("データ取得失敗")
 	}
+	// fmt.Println(users)
+	for i, v := range users {
+		fmt.Printf("%v回目", i)
+		fmt.Println(v.Age)
+		fmt.Println(v.CreatedAt)
+		fmt.Println(v.DeletedAt)
+		fmt.Println(v.ID)
+		fmt.Println(v.Mail)
+		fmt.Println(v.Password)
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "hello world"})
 }
 
@@ -158,4 +161,55 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": 200})
+}
+
+func DeleteUser(c *gin.Context) {
+	var deleteUserJson json.DeleteUserJson
+
+	if err := c.ShouldBindJSON(&deleteUserJson); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	mail := deleteUserJson.Mail
+	password := deleteUserJson.Password
+
+	db := infra.DBInit()
+	user := model.User{}
+
+	// Get first matched record
+	result := db.Select("password", "ID").Where("mail = ?", mail).First(&user)
+
+	if result.Error != nil {
+		c.JSON(http.StatusConflict, gin.H{"status": 400})
+		return
+	}
+
+	if isAuthorized := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); isAuthorized != nil {
+
+		fmt.Println("不一致")
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "パスワードかメールアドレスが正しくありません"})
+		return
+	}
+
+	fmt.Println("user ID !!!!!!!!!!!")
+	fmt.Println(user.ID)
+	fmt.Println(user.Age)
+	fmt.Println(user.Mail)
+	fmt.Println(user.Password)
+
+	if result = db.Where("mail = ?", mail).Delete(&user); result.Error != nil {
+		fmt.Println("データ削除失敗")
+		c.JSON(http.StatusServiceUnavailable, gin.H{"message": "正しくデータの削除を行えませんでした"})
+		return
+	}
+
+	if result.RowsAffected != 1 {
+		fmt.Println("データ削除失敗")
+		c.JSON(http.StatusServiceUnavailable, gin.H{"message": "正しくデータの削除を行えませんでした"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "正常に削除できました"})
+
 }

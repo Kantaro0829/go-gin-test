@@ -17,3 +17,8 @@ type UpdateUserJson struct {
 	NewMail     string `json:"new-mail"`
 	NewPassword string `json:"new-pass"`
 }
+
+type DeleteUserJson struct {
+	Mail     string `json:"mail"`
+	Password string `json:"pass"`
+}

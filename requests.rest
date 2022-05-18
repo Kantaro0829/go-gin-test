@@ -2,16 +2,7 @@ PUT  http://localhost:3000/user/reg/
 content-type: application/json
 
 {
-    "mail": "example1@gmail.com", "pass": "password", "age": 99
-}
-
-###
-
-PUT  http://localhost:3000/user/reg/
-content-type: application/json
-
-{
-    "mail": "example1@gmail.com", "pass": "password", "age": 10
+    "mail": "delete3@gmail.com", "pass": "password", "age": 130
 }
 
 ###
@@ -32,3 +23,17 @@ content-type: application/json
 {
     "mail": "example1@gmail.com", "pass": "password", "new-mail": "changed@gmail.com", "new-pass": "newpassword"
 }
+
+###
+
+DELETE http://localhost:3000/user/delete/
+Content-Type: application/json
+
+{
+    "mail": "delete2@gmail.com", "pass": "password"
+}
+
+###
+GET http://localhost:3000/user/get/
+Content-Type: application/json
+
