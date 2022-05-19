@@ -17,6 +17,11 @@ func main() {
 		user.POST("/login", handler.UserLogin)
 		user.PUT("/update", handler.UpdateUser)
 		user.DELETE("/delete", handler.DeleteUser)
+
+	}
+	scraping := router.Group("/scrape")
+	{
+		scraping.GET("/scrape", handler.ExampleScrape)
 	}
 
 	router.Run(":3000")

@@ -37,3 +37,7 @@ Content-Type: application/json
 GET http://localhost:3000/user/get/
 Content-Type: application/json
 
+###
+
+GET http://localhost:3000/scrape/scrape/
+Content-Type: application/json
