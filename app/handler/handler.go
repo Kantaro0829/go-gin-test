@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Kantaro0829/go-gin-test/auth"
 	"github.com/Kantaro0829/go-gin-test/infra"
 	"github.com/Kantaro0829/go-gin-test/json"
 	"github.com/Kantaro0829/go-gin-test/model"
@@ -59,8 +60,9 @@ func UserReg(c *gin.Context) {
 	}
 	fmt.Println("登録されたパスワード")
 	fmt.Println(user.Password)
+	token := auth.CreateTokenString(user.ID, user.Mail)
 
-	c.JSON(http.StatusOK, gin.H{"message": "data was inserted"})
+	c.JSON(http.StatusOK, gin.H{"message": "data was inserted", "token": token})
 }
 
 func UserLogin(c *gin.Context) {
@@ -85,7 +87,7 @@ func UserLogin(c *gin.Context) {
 	user := model.User{}
 
 	// Get first matched record
-	result := db.Select("password").Where("mail = ?", mail).First(&user)
+	result := db.Select("password", "mail", "id").Where("mail = ?", mail).First(&user)
 
 	if result.Error != nil {
 		c.JSON(http.StatusConflict, gin.H{"status": 400})
@@ -99,8 +101,10 @@ func UserLogin(c *gin.Context) {
 		return
 
 	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "succeed login"})
+	fmt.Println(user.ID)
+	fmt.Println(user.Mail)
+	token := auth.CreateTokenString(user.ID, user.Mail)
+	c.JSON(http.StatusOK, gin.H{"message": "succeed login", "token": token})
 
 }
 
@@ -212,4 +216,18 @@ func DeleteUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "正常に削除できました"})
 
+}
+
+func SampleJwtValidation(c *gin.Context) {
+	var sampleValidationJson json.SampleValidationJson
+
+	if err := c.ShouldBindJSON(&sampleValidationJson); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	token := sampleValidationJson.Token
+
+	sample := auth.ValidateTokenString(token)
+	c.JSON(http.StatusOK, gin.H{"mail": sample.Mail, "id": sample.Id})
 }

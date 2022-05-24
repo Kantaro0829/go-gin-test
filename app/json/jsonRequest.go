@@ -22,3 +22,7 @@ type DeleteUserJson struct {
 	Mail     string `json:"mail"`
 	Password string `json:"pass"`
 }
+
+type SampleValidationJson struct {
+	Token string `json:"token"`
+}

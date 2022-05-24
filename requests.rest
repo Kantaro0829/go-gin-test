@@ -2,7 +2,7 @@ PUT  http://localhost:3000/user/reg/
 content-type: application/json
 
 {
-    "mail": "delete3@gmail.com", "pass": "password", "age": 130
+    "mail": "test2@gmail.com", "pass": "password", "age": 130
 }
 
 ###
@@ -11,7 +11,7 @@ POST  http://localhost:3000/user/login/
 content-type: application/json
 
 {
-    "mail": "changed@gmail.com", "pass": "newpassword"
+    "mail": "test2@gmail.com", "pass": "password"
 }
 
 ###
@@ -21,7 +21,7 @@ PUT  http://localhost:3000/user/update/
 content-type: application/json
 
 {
-    "mail": "example1@gmail.com", "pass": "password", "new-mail": "changed@gmail.com", "new-pass": "newpassword"
+    "mail": "test1@gmail.com", "pass": "password", "new-mail": "updated1@gmail.com", "new-pass": "updatedpassword"
 }
 
 ###
@@ -30,7 +30,7 @@ DELETE http://localhost:3000/user/delete/
 Content-Type: application/json
 
 {
-    "mail": "delete2@gmail.com", "pass": "password"
+    "mail": "updated1@gmail.com", "pass": "updatedpassword"
 }
 
 ###
@@ -39,5 +39,9 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/scrape/scrape/
+POST http://localhost:3000/user/validate/
 Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6MywiTWFpbCI6InRlc3QyQGdtYWlsLmNvbSJ9.iwQ3J7a5x7RXRi0OaX_lnY17bN-qz4Vga6TuQfUSk0M"
+}
