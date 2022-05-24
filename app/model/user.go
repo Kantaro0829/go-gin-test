@@ -16,3 +16,9 @@ type User struct {
 	Password []byte
 	Age      uint8
 }
+
+type Task struct {
+	gorm.Model
+	Title  string
+	IsDone bool
+}
