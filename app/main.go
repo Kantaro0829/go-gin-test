@@ -20,6 +20,12 @@ func main() {
 		user.POST("/validate", handler.SampleJwtValidation)
 
 	}
+	todo := router.Group("todo")
+	{
+		todo.PUT("/create", handler.CreateTodo)
+		todo.PUT("/update", handler.UpdateTodo)
+
+	}
 
 	router.Run(":3000")
 
